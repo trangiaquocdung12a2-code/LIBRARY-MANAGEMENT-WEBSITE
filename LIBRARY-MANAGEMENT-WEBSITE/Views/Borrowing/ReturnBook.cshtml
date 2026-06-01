@@ -1,0 +1,50 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Borrowing
+
+@{
+    ViewBag.Title = "Return Book";
+
+    var detail = Model.BorrowingDetails.FirstOrDefault();
+    var book = detail != null ? detail.Book : null;
+}
+
+<h2>Return Book</h2>
+
+<div class="profile-box">
+    <h4>Return Confirmation</h4>
+
+    <p>Are you sure you want to return this book?</p>
+
+    <hr />
+
+    <p><b>Borrow Date:</b> @Model.BorrowDate.ToString("dd/MM/yyyy")</p>
+    <p><b>Due Date:</b> @Model.DueDate.ToString("dd/MM/yyyy")</p>
+    <p><b>Status:</b> @Model.Status</p>
+
+    <hr />
+
+    <h4>Book Information</h4>
+
+    @if (book != null)
+    {
+        <p><b>Title:</b> @book.Title</p>
+        <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+        <p><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
+        <p><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
+    }
+    else
+    {
+        <p>Book information not found.</p>
+    }
+
+    <form method="post" action="@Url.Action("ConfirmReturn", "Borrowing")">
+        <input type="hidden" name="borrowingId" value="@Model.BorrowingId" />
+
+        <button type="submit" class="btn btn-success">
+            Confirm Return
+        </button>
+
+        <a href="@Url.Action("MyBorrowings", "Borrowing")" class="btn btn-default">
+            Cancel
+        </a>
+    </form>
+</div>

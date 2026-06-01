@@ -1,0 +1,89 @@
+﻿@model List<LIBRARY_MANAGEMENT_WEBSITE.Models.Book>
+
+@{
+    ViewBag.Title = "Book List";
+    var categories = ViewBag.Categories as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Category>;
+}
+
+<h2>Book List</h2>
+
+<form method="get" action="@Url.Action("Index", "Book")" class="search-box">
+    <div class="row">
+        <div class="col-md-5">
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   class="form-control"
+                   placeholder="Search by title, author, category, publisher..." />
+        </div>
+
+        <div class="col-md-4">
+            <select name="categoryId" class="form-control">
+                <option value="">All Categories</option>
+
+                @foreach (var item in categories)
+                {
+                    <option value="@item.CategoryId" @(ViewBag.CategoryId == item.CategoryId ? "selected" : "")>
+                        @item.CategoryName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
+        </div>
+    </div>
+</form>
+
+<br />
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        string imageUrl = "https://via.placeholder.com/300x400?text=No+Book+Image";
+
+        <div class="col-md-3">
+            <div class="book-card">
+                <img src="@imageUrl" class="book-img" />
+
+                <div class="book-body">
+                    <h4>@book.Title</h4>
+
+                    <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                    <p><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
+                    <p><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
+
+                    @if (book.AvailableCopies > 0)
+                    {
+                        <span class="status available">Available: @book.AvailableCopies</span>
+                    }
+                    else
+                    {
+                        <span class="status unavailable">Unavailable</span>
+                    }
+
+                    <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block mt-10">
+                        View Detail
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <div class="text-center">
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="@(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a href="@Url.Action("Index", "Book", new { page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId })">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+}

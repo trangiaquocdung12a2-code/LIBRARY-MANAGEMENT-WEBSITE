@@ -1,0 +1,118 @@
+﻿@model List<LIBRARY_MANAGEMENT_WEBSITE.Models.Borrowing>
+
+@{
+    ViewBag.Title = "My Borrowings";
+}
+
+<h2>My Borrowings</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Borrow Date</th>
+            <th>Due Date</th>
+            <th>Return Date</th>
+            <th>Book Information</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                var detail = item.BorrowingDetails.FirstOrDefault();
+                var book = detail != null ? detail.Book : null;
+
+                <tr>
+                    <td>@item.BorrowDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.DueDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @(item.ReturnDate.HasValue ? item.ReturnDate.Value.ToString("dd/MM/yyyy") : "Not returned")
+                    </td>
+
+                    <td>
+                        @if (book != null)
+                        {
+                            <b>@book.Title</b>
+                            <br />
+                            <span>Author: @(book.Author != null ? book.Author.FullName : "Unknown")</span>
+                            <br />
+                            <span>Category: @(book.Category != null ? book.Category.CategoryName : "Unknown")</span>
+                        }
+                        else
+                        {
+                            <span>Unknown book</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (item.Status == "Pending")
+                        {
+                            <span class="status pending">Pending</span>
+                        }
+                        else if (item.Status == "Approved")
+                        {
+                            <span class="status approved">Approved</span>
+                        }
+                        else if (item.Status == "Returned")
+                        {
+                            <span class="status returned">Returned</span>
+                        }
+                        else if (item.Status == "Overdue")
+                        {
+                            <span class="status overdue">Overdue</span>
+                        }
+                        else if (item.Status == "Rejected")
+                        {
+                            <span class="status rejected">Rejected</span>
+                        }
+                        else
+                        {
+                            <span class="status unavailable">@item.Status</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (item.Status == "Approved" || item.Status == "Overdue")
+                        {
+                            <a href="@Url.Action("ReturnBook", "Borrowing", new { id = item.BorrowingId })" class="btn btn-success btn-sm">
+                                Return Book
+                            </a>
+                        }
+                        else if (item.Status == "Pending")
+                        {
+                            <span class="text-muted">Waiting approval</span>
+                        }
+                        else if (item.Status == "Returned")
+                        {
+                            <span class="text-success">Completed</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No action</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">You have no borrowing records.</td>
+            </tr>
+        }
+    </tbody>
+</table>

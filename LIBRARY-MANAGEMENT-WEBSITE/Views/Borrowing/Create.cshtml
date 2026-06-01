@@ -1,0 +1,48 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Book
+
+@{
+    ViewBag.Title = "Borrow Book";
+    var reader = ViewBag.Reader as LIBRARY_MANAGEMENT_WEBSITE.Models.Reader;
+    DateTime borrowDate = ViewBag.BorrowDate;
+    DateTime dueDate = ViewBag.DueDate;
+}
+
+<h2>Borrow Book</h2>
+
+<div class="profile-box">
+    <h4>Book Information</h4>
+
+    <p><b>Title:</b> @Model.Title</p>
+    <p><b>Author:</b> @(Model.Author != null ? Model.Author.FullName : "Unknown")</p>
+    <p><b>Category:</b> @(Model.Category != null ? Model.Category.CategoryName : "Unknown")</p>
+    <p><b>Publisher:</b> @(Model.Publisher != null ? Model.Publisher.PublisherName : "Unknown")</p>
+    <p><b>Available Copies:</b> @Model.AvailableCopies</p>
+
+    <hr />
+
+    <h4>Reader Information</h4>
+
+    <p><b>Full Name:</b> @(reader != null && reader.UserAccount != null ? reader.UserAccount.FullName : "")</p>
+    <p><b>Email:</b> @(reader != null && reader.UserAccount != null ? reader.UserAccount.Email : "")</p>
+    <p><b>Reader Code:</b> @(reader != null ? reader.ReaderCode : "")</p>
+
+    <hr />
+
+    <h4>Borrow Information</h4>
+
+    <p><b>Borrow Date:</b> @borrowDate.ToString("dd/MM/yyyy")</p>
+    <p><b>Due Date:</b> @dueDate.ToString("dd/MM/yyyy")</p>
+    <p><b>Status:</b> <span class="status pending">Pending</span></p>
+
+    <form method="post" action="@Url.Action("ConfirmBorrow", "Borrowing")">
+        <input type="hidden" name="bookId" value="@Model.BookId" />
+
+        <button type="submit" class="btn btn-success">
+            Confirm Borrow
+        </button>
+
+        <a href="@Url.Action("Details", "Book", new { id = Model.BookId })" class="btn btn-default">
+            Cancel
+        </a>
+    </form>
+</div>

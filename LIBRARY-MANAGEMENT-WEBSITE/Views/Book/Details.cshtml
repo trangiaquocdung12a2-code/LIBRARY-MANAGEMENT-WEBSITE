@@ -1,0 +1,73 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Book
+
+@{
+    ViewBag.Title = "Book Detail";
+
+    var img = Model.BookImages.FirstOrDefault(i => i.IsPrimary == true);
+    string imageUrl = img != null ? img.ImageUrl : "https://via.placeholder.com/300x400?text=No+Book+Image";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@imageUrl" class="detail-img" />
+    </div>
+
+    <div class="col-md-8">
+        <h2>@Model.Title</h2>
+
+        <p><b>ISBN:</b> @Model.ISBN</p>
+        <p><b>Author:</b> @(Model.Author != null ? Model.Author.FullName : "Unknown")</p>
+        <p><b>Category:</b> @(Model.Category != null ? Model.Category.CategoryName : "Unknown")</p>
+        <p><b>Publisher:</b> @(Model.Publisher != null ? Model.Publisher.PublisherName : "Unknown")</p>
+        <p><b>Publish Year:</b> @Model.PublishYear</p>
+        <p><b>Language:</b> @Model.Language</p>
+        <p><b>Page Count:</b> @Model.PageCount</p>
+        <p><b>Shelf Location:</b> @Model.ShelfLocation</p>
+        <p><b>Total Copies:</b> @Model.TotalCopies</p>
+        <p><b>Available Copies:</b> @Model.AvailableCopies</p>
+        <p><b>Average Rating:</b> @Model.AverageRating / 5</p>
+
+        <p>
+            <b>Status:</b>
+            @if (Model.AvailableCopies > 0)
+            {
+                <span class="status available">Available</span>
+            }
+            else
+            {
+                <span class="status unavailable">Unavailable</span>
+            }
+        </p>
+
+        <hr />
+
+        <h4>Description</h4>
+        <p>@Model.Description</p>
+
+        <div class="mt-10">
+            @if (Model.AvailableCopies > 0)
+            {
+                if (Session["UserId"] != null)
+                {
+                    <a href="@Url.Action("Create", "Borrowing", new { bookId = Model.BookId })" class="btn btn-success">
+                        Borrow Book
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-success">
+                        Borrow Book
+                    </a>
+                }
+            }
+            else
+            {
+                <button class="btn btn-default" disabled>Book Unavailable</button>
+            }
+
+            <a href="@Url.Action("Index", "Book")" class="btn btn-default">
+                Back to List
+            </a>
+        </div>
+    </div>
+</div>

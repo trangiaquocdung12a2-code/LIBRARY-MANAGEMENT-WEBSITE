@@ -1,0 +1,46 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Reader
+
+@{
+    ViewBag.Title = "My Profile";
+}
+
+<h2>My Profile</h2>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="profile-box">
+    <div class="row">
+        <div class="col-md-3">
+            @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
+            {
+                <img src="@Model.UserAccount.AvatarUrl" class="profile-avatar" />
+            }
+            else
+            {
+                <img src="https://via.placeholder.com/200x200?text=Avatar" class="profile-avatar" />
+            }
+        </div>
+
+        <div class="col-md-9">
+            <p><b>Full Name:</b> @(Model.UserAccount != null ? Model.UserAccount.FullName : "")</p>
+            <p><b>Email:</b> @(Model.UserAccount != null ? Model.UserAccount.Email : "")</p>
+            <p><b>Phone:</b> @(Model.UserAccount != null ? Model.UserAccount.Phone : "")</p>
+            <p><b>Address:</b> @(Model.UserAccount != null ? Model.UserAccount.Address : "")</p>
+
+            <hr />
+
+            <p><b>Reader Code:</b> @Model.ReaderCode</p>
+            <p><b>Date of Birth:</b> @(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("dd/MM/yyyy") : "")</p>
+            <p><b>Gender:</b> @Model.Gender</p>
+            <p><b>Membership Date:</b> @Model.MembershipDate.ToString("dd/MM/yyyy")</p>
+            <p><b>Membership Expiry:</b> @(Model.MembershipExpiry.HasValue ? Model.MembershipExpiry.Value.ToString("dd/MM/yyyy") : "")</p>
+            <p><b>Total Borrowed:</b> @Model.TotalBorrowed</p>
+            <p><b>Total Fines:</b> @Model.TotalFines</p>
+
+            <a href="@Url.Action("EditProfile", "Reader")" class="btn btn-primary">Update Profile</a>
+            <a href="@Url.Action("ChangePassword", "Reader")" class="btn btn-warning">Change Password</a>
+        </div>
+    </div>
+</div>

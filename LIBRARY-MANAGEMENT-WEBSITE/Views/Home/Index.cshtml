@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Home";
+
+    var newBooks = ViewBag.NewBooks as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Book>;
+    var featuredBooks = ViewBag.FeaturedBooks as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Book>;
+    var categories = ViewBag.Categories as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Category>;
+}
+
+<div class="guest-banner">
+    <h1>Welcome to Library Management Website</h1>
+    <p>
+        Search books, view book details, check availability, and borrow books easily.
+    </p>
+
+    <a href="@Url.Action("Index", "Book")" class="btn btn-light">Browse Books</a>
+
+    @if (Session["UserId"] == null)
+    {
+        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-light">Register</a>
+    }
+</div>
+
+<h2 class="section-title">New Books</h2>
+
+<div class="row">
+    @if (newBooks != null && newBooks.Any())
+    {
+        foreach (var book in newBooks)
+        {
+            string imageUrl = "https://via.placeholder.com/300x400?text=No+Book+Image";
+
+            <div class="col-md-3">
+                <div class="book-card">
+                    <img src="@imageUrl" class="book-img" />
+
+                    <div class="book-body">
+                        <h4>@book.Title</h4>
+
+                        <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                        <p><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
+
+                        @if (book.AvailableCopies > 0)
+                        {
+                            <span class="status available">Available</span>
+                        }
+                        else
+                        {
+                            <span class="status unavailable">Unavailable</span>
+                        }
+
+                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block mt-10">
+                            View Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-12">
+            <div class="alert alert-info">No new books available.</div>
+        </div>
+    }
+</div>
+
+<h2 class="section-title">Featured Books</h2>
+
+<div class="row">
+    @if (featuredBooks != null && featuredBooks.Any())
+    {
+        foreach (var book in featuredBooks)
+        {
+            string imageUrl = "https://via.placeholder.com/300x400?text=No+Book+Image";
+
+            <div class="col-md-3">
+                <div class="book-card">
+                    <img src="@imageUrl" class="book-img" />
+
+                    <div class="book-body">
+                        <h4>@book.Title</h4>
+
+                        <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                        <p><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
+
+                        @if (book.AvailableCopies > 0)
+                        {
+                            <span class="status available">Available</span>
+                        }
+                        else
+                        {
+                            <span class="status unavailable">Unavailable</span>
+                        }
+
+                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block mt-10">
+                            View Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-12">
+            <div class="alert alert-info">No featured books available.</div>
+        </div>
+    }
+</div>
+
+<h2 class="section-title">Categories</h2>
+
+<div class="row">
+    @if (categories != null && categories.Any())
+    {
+        foreach (var category in categories)
+        {
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Book", new { categoryId = category.CategoryId })" class="category-box">
+                    <h4>@category.CategoryName</h4>
+                    <p>View books in this category</p>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-12">
+            <div class="alert alert-info">No categories available.</div>
+        </div>
+    }
+</div>

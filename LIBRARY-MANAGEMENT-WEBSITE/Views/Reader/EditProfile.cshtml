@@ -1,0 +1,91 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Reader
+
+@{
+    ViewBag.Title = "Update Profile";
+}
+
+<h2>Update Profile</h2>
+
+<div class="profile-box">
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <form method="post" action="@Url.Action("EditProfile", "Reader")" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-3">
+                @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
+                {
+                    <img src="@Model.UserAccount.AvatarUrl" class="profile-avatar" />
+                }
+                else
+                {
+                    <img src="https://via.placeholder.com/200x200?text=Avatar" class="profile-avatar" />
+                }
+
+                <div class="form-group mt-10">
+                    <label>Upload Avatar</label>
+                    <input type="file" name="avatar" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text"
+                           name="fullName"
+                           class="form-control"
+                           value="@(Model.UserAccount != null ? Model.UserAccount.FullName : "")" />
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email"
+                           class="form-control"
+                           value="@(Model.UserAccount != null ? Model.UserAccount.Email : "")"
+                           readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text"
+                           name="phone"
+                           class="form-control"
+                           value="@(Model.UserAccount != null ? Model.UserAccount.Phone : "")" />
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" class="form-control" rows="3">@(Model.UserAccount != null ? Model.UserAccount.Address : "")</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date"
+                           name="dateOfBirth"
+                           class="form-control"
+                           value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" class="form-control">
+                        <option value="">-- Select Gender --</option>
+                        <option value="Male" @(Model.Gender == "Male" ? "selected" : "")>Male</option>
+                        <option value="Female" @(Model.Gender == "Female" ? "selected" : "")>Female</option>
+                        <option value="Other" @(Model.Gender == "Other" ? "selected" : "")>Other</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+                <a href="@Url.Action("Profile", "Reader")" class="btn btn-default">
+                    Back to Profile
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
