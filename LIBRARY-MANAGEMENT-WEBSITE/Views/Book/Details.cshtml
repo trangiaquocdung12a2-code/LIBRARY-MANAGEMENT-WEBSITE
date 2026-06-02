@@ -7,67 +7,188 @@
     string imageUrl = img != null ? img.ImageUrl : "https://via.placeholder.com/300x400?text=No+Book+Image";
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <img src="@imageUrl" class="detail-img" />
-    </div>
+<style>
+    /* Detail Container Layout */
+    .detail-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-top: 20px;
+    }
 
-    <div class="col-md-8">
-        <h2>@Model.Title</h2>
+    /* Fixed Aspect Ratio for Detail Cover */
+    .detail-img-container {
+        width: 100%;
+        max-width: 320px; /* Limits the large image width */
+        height: 450px;    /* Elegant book portrait height */
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin: 0 auto 20px auto;
+    }
 
-        <p><b>ISBN:</b> @Model.ISBN</p>
-        <p><b>Author:</b> @(Model.Author != null ? Model.Author.FullName : "Unknown")</p>
-        <p><b>Category:</b> @(Model.Category != null ? Model.Category.CategoryName : "Unknown")</p>
-        <p><b>Publisher:</b> @(Model.Publisher != null ? Model.Publisher.PublisherName : "Unknown")</p>
-        <p><b>Publish Year:</b> @Model.PublishYear</p>
-        <p><b>Language:</b> @Model.Language</p>
-        <p><b>Page Count:</b> @Model.PageCount</p>
-        <p><b>Shelf Location:</b> @Model.ShelfLocation</p>
-        <p><b>Total Copies:</b> @Model.TotalCopies</p>
-        <p><b>Available Copies:</b> @Model.AvailableCopies</p>
-        <p><b>Average Rating:</b> @Model.AverageRating / 5</p>
+    .detail-img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill; /* Matches your grid page scaling strategy */
+    }
 
-        <p>
-            <b>Status:</b>
-            @if (Model.AvailableCopies > 0)
-            {
-                <span class="status available">Available</span>
-            }
-            else
-            {
-                <span class="status unavailable">Unavailable</span>
-            }
-        </p>
+    /* Meta text layout styling */
+    .book-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2b2b2b;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
 
-        <hr />
+    /* Info Grid for Parameters */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 25px;
+        margin-bottom: 25px;
+    }
 
-        <h4>Description</h4>
-        <p>@Model.Description</p>
+    @@media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 
-        <div class="mt-10">
-            @if (Model.AvailableCopies > 0)
-            {
-                if (Session["UserId"] != null)
+    .info-item {
+        font-size: 1rem;
+        border-bottom: 1px dashed #eaeaea;
+        padding-bottom: 6px;
+    }
+
+    .info-item b {
+        color: #555;
+        display: inline-block;
+        width: 130px;
+    }
+
+    /* Badge Enhancements */
+    .badge-status {
+        display: inline-block;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 20px;
+    }
+    .badge-status.available {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .badge-status.unavailable {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Description Block */
+    .description-box {
+        background-color: #fdfdfd;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        margin: 25px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #444;
+    }
+
+    /* Button Group Adjustments */
+    .action-group .btn {
+        padding: 10px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="detail-container">
+    <div class="row">
+        <!-- Left Side: Cover Image Column -->
+        <div class="col-md-4 text-center">
+            <div class="detail-img-container">
+                <img src="@imageUrl" alt="@Model.Title" class="detail-img" />
+            </div>
+        </div>
+
+        <!-- Right Side: Details Info Column -->
+        <div class="col-md-8">
+            <h2 class="book-title">@Model.Title</h2>
+
+            <!-- Structured Properties Grid -->
+            <div class="info-grid">
+                <div class="info-item"><b>ISBN:</b> @Model.ISBN</div>
+                <div class="info-item"><b>Author:</b> @(Model.Author != null ? Model.Author.FullName : "Unknown")</div>
+                <div class="info-item"><b>Category:</b> @(Model.Category != null ? Model.Category.CategoryName : "Unknown")</div>
+                <div class="info-item"><b>Publisher:</b> @(Model.Publisher != null ? Model.Publisher.PublisherName : "Unknown")</div>
+                <div class="info-item"><b>Publish Year:</b> @Model.PublishYear</div>
+                <div class="info-item"><b>Language:</b> @Model.Language</div>
+                <div class="info-item"><b>Page Count:</b> @Model.PageCount</div>
+                <div class="info-item"><b>Shelf Location:</b> @Model.ShelfLocation</div>
+                <div class="info-item"><b>Total Copies:</b> @Model.TotalCopies</div>
+                <div class="info-item"><b>Available Copies:</b> @Model.AvailableCopies</div>
+                <div class="info-item"><b>Average Rating:</b> ★ @Model.AverageRating / 5</div>
+                <div class="info-item">
+                    <b>Status:</b>
+                    @if (Model.AvailableCopies > 0)
+                    {
+                        <span class="badge-status available">Available</span>
+                    }
+                    else
+                    {
+                        <span class="badge-status unavailable">Unavailable</span>
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <h4>Description</h4>
+            <div class="description-box">
+                @if (!string.IsNullOrEmpty(Model.Description))
                 {
-                    <a href="@Url.Action("Create", "Borrowing", new { bookId = Model.BookId })" class="btn btn-success">
-                        Borrow Book
-                    </a>
+                    @Model.Description
                 }
                 else
                 {
-                    <a href="@Url.Action("Login", "Account")" class="btn btn-success">
-                        Borrow Book
-                    </a>
+                    <i class="text-muted">No description available for this book.</i>
                 }
-            }
-            else
-            {
-                <button class="btn btn-default" disabled>Book Unavailable</button>
-            }
+            </div>
 
-            <a href="@Url.Action("Index", "Book")" class="btn btn-default">
-                Back to List
-            </a>
+            <!-- Action Buttons -->
+            <div class="action-group mt-20">
+                @if (Model.AvailableCopies > 0)
+                {
+                    if (Session["UserId"] != null)
+                    {
+                        <a href="@Url.Action("Create", "Borrowing", new { bookId = Model.BookId })" class="btn btn-success">
+                            <i class="glyphicon glyphicon-book"></i> Borrow Book
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-success">
+                            <i class="glyphicon glyphicon-log-in"></i> Login to Borrow
+                        </a>
+                    }
+                }
+                else
+                {
+                    <button class="btn btn-danger" disabled>Book Unavailable</button>
+                }
+
+                <a href="@Url.Action("Index", "Book")" class="btn btn-default">
+                    Back to List
+                </a>
+            </div>
         </div>
     </div>
 </div>

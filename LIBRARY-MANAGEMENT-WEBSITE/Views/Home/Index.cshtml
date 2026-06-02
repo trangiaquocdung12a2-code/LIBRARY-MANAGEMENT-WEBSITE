@@ -6,11 +6,153 @@
     var categories = ViewBag.Categories as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Category>;
 }
 
+<style>
+    /* Section Headers */
+    .section-title {
+        font-weight: 700;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f1f1f1;
+        color: #2c3e50;
+    }
+
+    /* Flexbox layout alignment grid */
+    .book-grid {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .book-card-container {
+        display: flex;
+        margin-bottom: 30px;
+    }
+
+    /* Card Layout Structures */
+    .book-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+    /* Fixed Aspect Ratio Image Fix */
+    .book-img-container {
+        width: 100%;
+        height: 380px; /* Long book portrait view matching Index page */
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .book-img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: fill; /* Edge-to-edge stretch matching Index fix */
+    }
+
+    /* Flex Card Body alignment to lock buttons to bottom */
+    .book-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+        .book-body h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 10px;
+            height: 2.4em; /* Enforce uniform max height limit for titles */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+    .book-info {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    /* Status Badges */
+    .status-container {
+        margin-bottom: 15px;
+        margin-top: auto; /* Pushes the status area and button down together */
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+
+        .status-badge.available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+    /* Category Boxes Styling */
+    .category-box {
+        display: block;
+        background: #f8f9fa;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none !important;
+        color: #333;
+        margin-bottom: 20px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .category-box:hover {
+            background: #007bff;
+            color: #fff !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.15);
+        }
+
+        .category-box h4 {
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        .category-box p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+</style>
+
 <div class="guest-banner">
     <h1>Welcome to Library Management Website</h1>
-    <p>
-        Search books, view book details, check availability, and borrow books easily.
-    </p>
+    <p>Search books, view book details, check availability, and borrow books easily.</p>
 
     <a href="@Url.Action("Index", "Book")" class="btn btn-light">Browse Books</a>
 
@@ -20,39 +162,40 @@
     }
 </div>
 
+<!-- ================= NEW BOOKS SECTION ================= -->
 <h2 class="section-title">New Books</h2>
 
-<div class="row">
+<div class="book-grid">
     @if (newBooks != null && newBooks.Any())
     {
         foreach (var book in newBooks)
         {
             var primaryImage = book.BookImages.FirstOrDefault(x => x.IsPrimary == true);
+            string imageUrl = primaryImage != null ? Url.Content(primaryImage.ImageUrl) : "https://via.placeholder.com/300x400?text=No+Book+Image";
 
-            string imageUrl = primaryImage != null
-                ? Url.Content(primaryImage.ImageUrl)
-                : "https://via.placeholder.com/300x400?text=No+Book+Image";
-
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6 book-card-container">
                 <div class="book-card">
-                    <img src="@imageUrl" class="book-img" />
+                    <div class="book-img-container">
+                        <img src="@imageUrl" alt="@book.Title" class="book-img" />
+                    </div>
 
                     <div class="book-body">
-                        <h4>@book.Title</h4>
+                        <h4 title="@book.Title">@book.Title</h4>
+                        <p class="book-info"><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                        <p class="book-info"><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
 
-                        <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
-                        <p><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
+                        <div class="status-container">
+                            @if (book.AvailableCopies > 0)
+                            {
+                                <span class="status-badge available">Available</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge unavailable">Unavailable</span>
+                            }
+                        </div>
 
-                        @if (book.AvailableCopies > 0)
-                        {
-                            <span class="status available">Available</span>
-                        }
-                        else
-                        {
-                            <span class="status unavailable">Unavailable</span>
-                        }
-
-                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block mt-10">
+                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block">
                             View Detail
                         </a>
                     </div>
@@ -68,39 +211,40 @@
     }
 </div>
 
+<!-- ================= FEATURED BOOKS SECTION ================= -->
 <h2 class="section-title">Featured Books</h2>
 
-<div class="row">
+<div class="book-grid">
     @if (featuredBooks != null && featuredBooks.Any())
     {
         foreach (var book in featuredBooks)
         {
             var primaryImage = book.BookImages.FirstOrDefault(x => x.IsPrimary == true);
+            string imageUrl = primaryImage != null ? Url.Content(primaryImage.ImageUrl) : "https://via.placeholder.com/300x400?text=No+Book+Image";
 
-            string imageUrl = primaryImage != null
-                ? Url.Content(primaryImage.ImageUrl)
-                : "https://via.placeholder.com/300x400?text=No+Book+Image";
-
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6 book-card-container">
                 <div class="book-card">
-                    <img src="@imageUrl" class="book-img" />
+                    <div class="book-img-container">
+                        <img src="@imageUrl" alt="@book.Title" class="book-img" />
+                    </div>
 
                     <div class="book-body">
-                        <h4>@book.Title</h4>
+                        <h4 title="@book.Title">@book.Title</h4>
+                        <p class="book-info"><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                        <p class="book-info"><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
 
-                        <p><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
-                        <p><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
+                        <div class="status-container">
+                            @if (book.AvailableCopies > 0)
+                            {
+                                <span class="status-badge available">Available</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge unavailable">Unavailable</span>
+                            }
+                        </div>
 
-                        @if (book.AvailableCopies > 0)
-                        {
-                            <span class="status available">Available</span>
-                        }
-                        else
-                        {
-                            <span class="status unavailable">Unavailable</span>
-                        }
-
-                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block mt-10">
+                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block">
                             View Detail
                         </a>
                     </div>
@@ -116,6 +260,7 @@
     }
 </div>
 
+<!-- ================= CATEGORIES SECTION ================= -->
 <h2 class="section-title">Categories</h2>
 
 <div class="row">
@@ -123,7 +268,7 @@
     {
         foreach (var category in categories)
         {
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 <a href="@Url.Action("Index", "Book", new { categoryId = category.CategoryId })" class="category-box">
                     <h4>@category.CategoryName</h4>
                     <p>View books in this category</p>

@@ -112,11 +112,11 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
 
             string hashedPassword = HashPassword(password);
 
-            var user = db.UserAccounts.FirstOrDefault(u =>
-                u.Email == email &&
-                u.PasswordHash == hashedPassword &&
-                u.IsActive == true
-            );
+            var user = db.UserAccounts.AsEnumerable().FirstOrDefault(u =>
+         u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) &&
+         u.PasswordHash.Equals(hashedPassword, StringComparison.OrdinalIgnoreCase) &&
+         u.IsActive == true
+     );
 
             if (user == null)
             {
