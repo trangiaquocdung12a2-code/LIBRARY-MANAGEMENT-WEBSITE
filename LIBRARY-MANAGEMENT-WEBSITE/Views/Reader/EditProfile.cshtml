@@ -13,20 +13,22 @@
     }
 
     <form method="post" action="@Url.Action("EditProfile", "Reader")" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
         <div class="row">
             <div class="col-md-3">
                 @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
                 {
-                    <img src="@Model.UserAccount.AvatarUrl" class="profile-avatar" />
+                    <img src="@Model.UserAccount.AvatarUrl" id="profileImagePreview" class="profile-avatar" style="width:200px; height:200px; object-fit:cover; border-radius:50%;" />
                 }
                 else
                 {
-                    <img src="https://via.placeholder.com/200x200?text=Avatar" class="profile-avatar" />
+                    <img src="https://via.placeholder.com/200x200?text=Avatar" id="profileImagePreview" class="profile-avatar" style="width:200px; height:200px; object-fit:cover; border-radius:50%;" />
                 }
 
                 <div class="form-group mt-10">
                     <label>Upload Avatar</label>
-                    <input type="file" name="avatar" class="form-control" />
+                    <input type="file" id="avatarFileInput" name="avatar" class="form-control" accept="image/*" onchange="previewSelectedAvatar(this);" />
                 </div>
             </div>
 
@@ -37,14 +39,6 @@
                            name="fullName"
                            class="form-control"
                            value="@(Model.UserAccount != null ? Model.UserAccount.FullName : "")" />
-                </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email"
-                           class="form-control"
-                           value="@(Model.UserAccount != null ? Model.UserAccount.Email : "")"
-                           readonly />
                 </div>
 
                 <div class="form-group">
@@ -65,6 +59,8 @@
                     <input type="date"
                            name="dateOfBirth"
                            class="form-control"
+                           max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                           onkeydown="return false;"
                            value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
                 </div>
 
@@ -89,3 +85,18 @@
         </div>
     </form>
 </div>
+
+<script type="text/javascript">
+    function previewSelectedAvatar(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                // Dynamically sets the <img> src attribute directly to the selected image's binary stream base64 cache data
+                document.getElementById('profileImagePreview').setAttribute('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

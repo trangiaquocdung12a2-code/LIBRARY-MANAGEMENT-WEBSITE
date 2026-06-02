@@ -55,14 +55,10 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditProfile(
-            string fullName,
-            string phone,
-            string address,
-            DateTime? dateOfBirth,
-            string gender,
-            HttpPostedFileBase avatar)
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProfile(DateTime? dateOfBirth, string fullName, string phone, string address, string gender, HttpPostedFileBase avatar)
         {
+            // 1. Session Authorization Sanity Check
             if (Session["UserId"] == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -70,51 +66,71 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
 
             int userId = Convert.ToInt32(Session["UserId"]);
 
+            // 2. Fetch the existing Reader profile tracking entry along with its UserAccount link entity
             var reader = db.Readers.FirstOrDefault(r => r.UserId == userId);
-
             if (reader == null)
             {
                 return HttpNotFound();
             }
 
-            if (string.IsNullOrWhiteSpace(fullName))
+            // 3. Strict Server-Side Business Rule Validations
+            // Check to completely prevent back-door data manipulation of future birthday dates
+            if (dateOfBirth.HasValue && dateOfBirth.Value > DateTime.Now)
             {
-                ViewBag.Error = "Full name is required.";
-                return View(reader);
+                ViewBag.Error = "Date of birth cannot be set to a future date calendar window.";
+                return View(reader); // Return the view with the model record state to show the error message
             }
 
-            reader.UserAccount.FullName = fullName;
-            reader.UserAccount.Phone = phone;
-            reader.UserAccount.Address = address;
-            reader.UserAccount.UpdatedAt = DateTime.Now;
-
-            reader.DateOfBirth = dateOfBirth;
-            reader.Gender = gender;
-
-            if (avatar != null && avatar.ContentLength > 0)
+            try
             {
-                string folderPath = Server.MapPath("~/Content/avatars");
-
-                if (!Directory.Exists(folderPath))
+                // 4. File Upload Avatar Handling Logic (if an image file was supplied)
+                if (avatar != null && avatar.ContentLength > 0)
                 {
-                    Directory.CreateDirectory(folderPath);
+                    string fileName = System.IO.Path.GetFileName(avatar.FileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + fileName;
+                    string folderPath = Server.MapPath("~/Uploads/Avatars/");
+
+                    // Check if directory folder exists physically, create it if missing
+                    if (!System.IO.Directory.Exists(folderPath))
+                    {
+                        System.IO.Directory.CreateDirectory(folderPath);
+                    }
+
+                    string physicalPath = System.IO.Path.Combine(folderPath, uniqueFileName);
+                    avatar.SaveAs(physicalPath);
+
+                    // Update database pointer path mapping asset
+                    if (reader.UserAccount != null)
+                    {
+                        reader.UserAccount.AvatarUrl = "/Uploads/Avatars/" + uniqueFileName;
+                    }
                 }
 
-                string extension = Path.GetExtension(avatar.FileName);
-                string fileName = Guid.NewGuid().ToString() + extension;
-                string savePath = Path.Combine(folderPath, fileName);
+                // 5. Update Editable Text Property Parameters safely
+                if (reader.UserAccount != null)
+                {
+                    reader.UserAccount.FullName = fullName;
+                    reader.UserAccount.Phone = phone;
+                    reader.UserAccount.Address = address;
 
-                avatar.SaveAs(savePath);
+                    // NOTE: We intentionally do NOT modify reader.UserAccount.Email here.
+                    // It preserves the old database value, completely satisfying the security rule.
+                }
 
-                reader.UserAccount.AvatarUrl = "/Content/avatars/" + fileName;
+                reader.Gender = gender;
+                reader.DateOfBirth = dateOfBirth;
+
+                // 6. Save modifications directly to the SQL database tables
+                db.SubmitChanges();
+
+                TempData["Success"] = "Profile records updated successfully.";
+                return RedirectToAction("Profile", "Reader");
             }
-
-            db.SubmitChanges();
-
-            Session["FullName"] = fullName;
-
-            TempData["Success"] = "Profile updated successfully.";
-            return RedirectToAction("Profile");
+            catch (Exception ex)
+            {
+                ViewBag.Error = "An unexpected error occurred while saving your profile data changes: " + ex.Message;
+                return View(reader);
+            }
         }
 
         public ActionResult ChangePassword()
