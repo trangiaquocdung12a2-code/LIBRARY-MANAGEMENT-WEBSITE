@@ -27,7 +27,11 @@
     {
         foreach (var book in newBooks)
         {
-            string imageUrl = "https://via.placeholder.com/300x400?text=No+Book+Image";
+            var primaryImage = book.BookImages.FirstOrDefault(x => x.IsPrimary == true);
+
+            string imageUrl = primaryImage != null
+                ? Url.Content(primaryImage.ImageUrl)
+                : "https://via.placeholder.com/300x400?text=No+Book+Image";
 
             <div class="col-md-3">
                 <div class="book-card">
@@ -71,7 +75,11 @@
     {
         foreach (var book in featuredBooks)
         {
-            string imageUrl = "https://via.placeholder.com/300x400?text=No+Book+Image";
+            var primaryImage = book.BookImages.FirstOrDefault(x => x.IsPrimary == true);
+
+            string imageUrl = primaryImage != null
+                ? Url.Content(primaryImage.ImageUrl)
+                : "https://via.placeholder.com/300x400?text=No+Book+Image";
 
             <div class="col-md-3">
                 <div class="book-card">
