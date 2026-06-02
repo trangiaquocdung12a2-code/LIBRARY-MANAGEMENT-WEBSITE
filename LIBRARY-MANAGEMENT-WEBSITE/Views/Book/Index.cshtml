@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "Book List";
     var categories = ViewBag.Categories as List<LIBRARY_MANAGEMENT_WEBSITE.Models.Category>;
+    string currentLetter = ViewBag.SelectedLetter ?? "All";
+    string currentSort = ViewBag.SortBy ?? "title";
+    string currentView = ViewBag.ViewMode ?? "grid";
 }
 
 <style>
@@ -11,11 +14,64 @@
         background-color: #f8f9fa;
         padding: 20px;
         border-radius: 8px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    /* Flexbox layout to ensure all cards in a row have identical height */
+    /* Alphabet Navigation Bar */
+    .alphabet-container {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 25px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .alphabet-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+        gap: 4px;
+    }
+
+        .alphabet-list li a {
+            display: block;
+            padding: 6px 12px;
+            color: #495057;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+            .alphabet-list li a:hover {
+                background-color: #e9ecef;
+                color: #007bff;
+            }
+
+        .alphabet-list li.active a {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    /* Utility Control Tool Belt */
+    .control-belt {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* GRID VIEW MODE STYLES (Old Layout) */
     .book-grid {
         display: flex;
         flex-wrap: wrap;
@@ -28,7 +84,6 @@
         margin-bottom: 30px;
     }
 
-    /* Card Styling */
     .book-card {
         display: flex;
         flex-direction: column;
@@ -46,33 +101,29 @@
             box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
 
-    /* Fixed Aspect Ratio for Book Covers */
-    /* Fixed Aspect Ratio for Book Covers - Made taller to fit complete book scales */
     .book-img-container {
         width: 100%;
-        height: 380px; /* Increased from 320px to 380px for a longer container */
-        background-color: #f8f9fa; /* Light background to elegantly pad narrower covers */
+        height: 380px;
+        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        border-bottom: 1px solid #eaeaea; /* Optional: adds a clean separation line under the cover */
+        border-bottom: 1px solid #eaeaea;
     }
 
-    /* Update this specific block in your stylesheet */
     .book-img {
-        width: 100%; /* Forces the image to stretch to the full width of the card */
-        height: 100%; /* Forces the image to stretch to the full 380px height */
-        display: block; /* Eliminates any inline spacing behaviors at the bottom */
-        object-fit: fill; /* Tells the image to force-stretch and completely fill the area */
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: fill;
     }
 
-    /* Card Body Space Push */
     .book-body {
         padding: 15px;
         display: flex;
         flex-direction: column;
-        flex-grow: 1; /* Pushes button/status to the absolute bottom */
+        flex-grow: 1;
     }
 
         .book-body h4 {
@@ -80,7 +131,7 @@
             font-weight: 600;
             margin-top: 0;
             margin-bottom: 10px;
-            height: 2.4em; /* Enforces maximum 2 lines text height */
+            height: 2.4em;
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
@@ -94,7 +145,6 @@
         margin-bottom: 5px;
     }
 
-    /* Status Badges */
     .status-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -116,10 +166,76 @@
         }
 
     .action-btn {
-        margin-top: auto; /* Aligns buttons horizontally across all cards */
+        margin-top: auto;
     }
 
-    /* Pagination Styling Fixes */
+    /* LIST VIEW MODE STYLES (New Layout row striping) */
+    .book-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .book-list-row {
+        display: flex;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+        padding: 15px;
+        align-items: center;
+    }
+
+        .book-list-row:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+    .book-list-thumb {
+        width: 90px;
+        height: 120px;
+        flex-shrink: 0;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        margin-right: 20px;
+    }
+
+        .book-list-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+
+    .book-list-meta {
+        flex-grow: 1;
+    }
+
+        .book-list-meta h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+    .book-list-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 0;
+    }
+
+    .book-list-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        min-width: 160px;
+        flex-shrink: 0;
+    }
+
+    /* Pagination Styles */
     .pagination-container {
         margin-top: 40px;
         margin-bottom: 40px;
@@ -154,7 +270,6 @@
                 }
 
             .custom-pagination li.active a {
-                z-index: 3;
                 color: #fff;
                 background-color: #007bff;
                 border-color: #007bff;
@@ -162,77 +277,152 @@
             }
 </style>
 
-<h2>Book List</h2>
+<h2>Catalog Library Asset Directory</h2>
 
-<form method="get" action="@Url.Action("Index", "Book")" class="search-box">
+<form method="get" action="@Url.Action("Index", "Book")" class="search-box" id="filterForm">
+    <input type="hidden" name="viewMode" id="viewModeInput" value="@currentView" />
+    <input type="hidden" name="letter" id="letterInput" value="@currentLetter" />
+
     <div class="row">
-        <div class="col-md-5 mb-2">
-            <input type="text"
-                   name="search"
-                   value="@ViewBag.Search"
-                   class="form-control"
-                   placeholder="Search by title, author, category, publisher..." />
+        <div class="col-md-4 mb-2">
+            <label class="small text-muted font-weight-bold">Keyword Search</label>
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search title, author..." />
         </div>
 
-        <div class="col-md-4 mb-2">
-            <select name="categoryId" class="form-control">
+        <div class="col-md-3 mb-2">
+            <label class="small text-muted font-weight-bold">Category</label>
+            <select name="categoryId" class="form-control" onchange="document.getElementById('filterForm').submit();">
                 <option value="">All Categories</option>
                 @if (categories != null)
                 {
                     foreach (var item in categories)
                     {
-                        <option value="@item.CategoryId" @(ViewBag.CategoryId == item.CategoryId ? "selected" : "")>
-                            @item.CategoryName
-                        </option>
+                        <option value="@item.CategoryId" @(ViewBag.CategoryId == item.CategoryId ? "selected" : "")>@item.CategoryName</option>
                     }
                 }
             </select>
         </div>
 
         <div class="col-md-3 mb-2">
+            <label class="small text-muted font-weight-bold">Sorting Metric</label>
+            <select name="sortBy" class="form-control" onchange="document.getElementById('filterForm').submit();">
+                <option value="title" @(currentSort == "title" ? "selected" : "")>Alphabetical Order (Title)</option>
+                <option value="author" @(currentSort == "author" ? "selected" : "")>Author Name</option>
+                <option value="date" @(currentSort == "date" ? "selected" : "")>Date Added (Newest First)</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 mb-2">
+            <label class="d-none d-md-block">&nbsp;</label>
             <button type="submit" class="btn btn-primary btn-block">Search</button>
         </div>
     </div>
 </form>
 
-<div class="book-grid">
-    @foreach (var book in Model)
-    {
-        var primaryImage = book.BookImages?.FirstOrDefault(x => x.IsPrimary == true);
-        string imageUrl = primaryImage != null
-            ? Url.Content(primaryImage.ImageUrl)
-            : "https://via.placeholder.com/300x400?text=No+Book+Image";
+<div class="alphabet-container">
+    <ul class="alphabet-list">
+        <li class="@(currentLetter == "All" ? "active" : "")">
+            <a href="#" onclick="filterByLetter('All')">All</a>
+        </li>
+        @foreach (char c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        {
+            string strChar = c.ToString();
+            <li class="@(currentLetter == strChar ? "active" : "")">
+                <a href="#" onclick="filterByLetter('@strChar')">@strChar</a>
+            </li>
+        }
+    </ul>
+</div>
 
-        <div class="col-md-3 col-sm-6 book-card-container">
-            <div class="book-card">
-                <div class="book-img-container">
-                    <img src="@imageUrl" alt="@book.Title" class="book-img" />
+<div class="control-belt">
+    <div class="text-muted">
+        Showing <strong>@Model.Count</strong> items out of this view branch.
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default @(currentView == "grid" ? "btn-primary text-white" : "")" onclick="switchViewMode('grid')" title="Grid View Mode">
+            <i class="glyphicon glyphicon-th"></i> Grid Covers
+        </button>
+        <button type="button" class="btn btn-default @(currentView == "list" ? "btn-primary text-white" : "")" onclick="switchViewMode('list')" title="List Summary Rows">
+            <i class="glyphicon glyphicon-th-list"></i> List View
+        </button>
+    </div>
+</div>
+
+@if (currentView == "list")
+{
+    <div class="book-list-container">
+        @foreach (var book in Model)
+        {
+            var primaryImage = book.BookImages?.FirstOrDefault(x => x.IsPrimary == true);
+            string imageUrl = primaryImage != null ? Url.Content(primaryImage.ImageUrl) : "https://via.placeholder.com/300x400?text=No+Book+Image";
+
+            <div class="book-list-row">
+                <div class="book-list-thumb">
+                    <img src="@imageUrl" alt="@book.Title" />
                 </div>
-
-                <div class="book-body">
-                    <h4 title="@book.Title">@book.Title</h4>
-
-                    <p class="book-info"><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
-                    <p class="book-info"><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
-                    <p class="book-info"><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
-
+                <div class="book-list-meta">
+                    <h4>@book.Title</h4>
+                    <div class="book-list-details">
+                        <span class="text-muted"><i class="glyphicon glyphicon-user"></i> <b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</span>
+                        <span class="text-muted"><i class="glyphicon glyphicon-folder-open"></i> <b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</span>
+                        <span class="text-muted"><i class="glyphicon glyphicon-print"></i> <b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</span>
+                    </div>
+                </div>
+                <div class="book-list-side">
                     @if (book.AvailableCopies > 0)
                     {
-                        <div class="status-badge available">Available: @book.AvailableCopies</div>
+                        <div class="status-badge available" style="margin-bottom:10px;">Available: @book.AvailableCopies</div>
                     }
                     else
                     {
-                        <div class="status-badge unavailable">Unavailable</div>
+                        <div class="status-badge unavailable" style="margin-bottom:10px;">Unavailable</div>
                     }
-
-                    <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block action-btn">
-                        View Detail
+                    <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-sm btn-primary btn-block">
+                        View Details
                     </a>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
+else
+{
+    <div class="book-grid">
+        @foreach (var book in Model)
+        {
+            var primaryImage = book.BookImages?.FirstOrDefault(x => x.IsPrimary == true);
+            string imageUrl = primaryImage != null ? Url.Content(primaryImage.ImageUrl) : "https://via.placeholder.com/300x400?text=No+Book+Image";
+
+            <div class="col-md-3 col-sm-6 book-card-container">
+                <div class="book-card">
+                    <div class="book-img-container">
+                        <img src="@imageUrl" alt="@book.Title" class="book-img" />
+                    </div>
+
+                    <div class="book-body">
+                        <h4 title="@book.Title">@book.Title</h4>
+                        <p class="book-info"><b>Author:</b> @(book.Author != null ? book.Author.FullName : "Unknown")</p>
+                        <p class="book-info"><b>Category:</b> @(book.Category != null ? book.Category.CategoryName : "Unknown")</p>
+                        <p class="book-info"><b>Publisher:</b> @(book.Publisher != null ? book.Publisher.PublisherName : "Unknown")</p>
+
+                        @if (book.AvailableCopies > 0)
+                        {
+                            <div class="status-badge available">Available: @book.AvailableCopies</div>
+                        }
+                        else
+                        {
+                            <div class="status-badge unavailable">Unavailable</div>
+                        }
+
+                        <a href="@Url.Action("Details", "Book", new { id = book.BookId })" class="btn btn-primary btn-block action-btn">
+                            View Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @if (ViewBag.TotalPages > 1)
 {
@@ -241,7 +431,7 @@
             @for (int i = 1; i <= ViewBag.TotalPages; i++)
             {
                 <li class="@(i == ViewBag.CurrentPage ? "active" : "")">
-                    <a href="@Url.Action("Index", "Book", new { page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId })">
+                    <a href="@Url.Action("Index", "Book", new { page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId, letter = currentLetter, sortBy = currentSort, viewMode = currentView })">
                         @i
                     </a>
                 </li>
@@ -249,3 +439,15 @@
         </ul>
     </div>
 }
+
+<script type="text/javascript">
+    function filterByLetter(selectedLetter) {
+        document.getElementById('letterInput').value = selectedLetter;
+        document.getElementById('filterForm').submit();
+    }
+
+    function switchViewMode(mode) {
+        document.getElementById('viewModeInput').value = mode;
+        document.getElementById('filterForm').submit();
+    }
+</script>

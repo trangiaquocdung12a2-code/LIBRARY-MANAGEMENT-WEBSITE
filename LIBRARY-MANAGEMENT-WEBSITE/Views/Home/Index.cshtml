@@ -117,9 +117,23 @@
             color: #721c24;
         }
 
+    /* FIX: Category Row Flex wrapper to make all column boxes equal heights */
+    .category-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .category-col {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
     /* Category Boxes Styling */
     .category-box {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%; /* Fill the entire column container */
         background: #f8f9fa;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
@@ -127,7 +141,6 @@
         text-align: center;
         text-decoration: none !important;
         color: #333;
-        margin-bottom: 20px;
         transition: all 0.2s ease-in-out;
     }
 
@@ -140,6 +153,7 @@
 
         .category-box h4 {
             margin-top: 0;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
@@ -162,7 +176,6 @@
     }
 </div>
 
-<!-- ================= NEW BOOKS SECTION ================= -->
 <h2 class="section-title">New Books</h2>
 
 <div class="book-grid">
@@ -211,7 +224,6 @@
     }
 </div>
 
-<!-- ================= FEATURED BOOKS SECTION ================= -->
 <h2 class="section-title">Featured Books</h2>
 
 <div class="book-grid">
@@ -260,15 +272,15 @@
     }
 </div>
 
-<!-- ================= CATEGORIES SECTION ================= -->
 <h2 class="section-title">Categories</h2>
 
-<div class="row">
+<div class="row category-grid">
     @if (categories != null && categories.Any())
     {
         foreach (var category in categories)
         {
-            <div class="col-md-3 col-sm-6">
+            /* FIX: Added category-col class wrapper to ensure uniform flex stretch execution */
+            <div class="col-md-3 col-sm-6 category-col">
                 <a href="@Url.Action("Index", "Book", new { categoryId = category.CategoryId })" class="category-box">
                     <h4>@category.CategoryName</h4>
                     <p>View books in this category</p>
