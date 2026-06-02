@@ -1,0 +1,230 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Reader
+
+@{
+    ViewBag.Title = "Reader Detailed File - " + Model.ReaderCode;
+    // FIX 1: Using dynamic bypasses the missing namespace View Model compilation error entirely
+    var history = ViewBag.History as IEnumerable<dynamic>;
+}
+
+<style>
+    .details-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        padding: 30px;
+        margin-top: 20px;
+    }
+
+    .profile-summary-sidebar {
+        border-right: 1px solid #edf2f7;
+        padding-right: 25px;
+    }
+
+    .data-row {
+        padding: 11px 0;
+        border-bottom: 1px dashed #f1f5f9;
+    }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+    .data-label {
+        font-weight: 600;
+        color: #4a5568;
+        width: 180px;
+        display: inline-block;
+    }
+
+    .data-value {
+        color: #1a202c;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center" style="margin-top: 20px;">
+    <h2>Reader Record Management Panel</h2>
+    <a href="@Url.Action("ReaderProfiles", "Librarian")" class="btn btn-default">
+        <span class="glyphicon glyphicon-arrow-left"></span> Back to Matrix
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}
+
+<div class="details-card">
+    <div class="row">
+        <div class="col-md-3 text-center profile-summary-sidebar">
+            @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
+            {
+                <img src="@Url.Content(Model.UserAccount.AvatarUrl)" style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 4px solid #edf2f7;" alt="Avatar" />
+            }
+            else
+            {
+                <img src="https://via.placeholder.com/160x160?text=Reader" style="width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 4px solid #edf2f7;" alt="Avatar" />
+            }
+
+            <h3 class="mt-3 mb-1" style="font-size: 1.3rem; font-weight: 700;">
+                @(Model.UserAccount != null ? Model.UserAccount.FullName : "Unassigned Account")
+            </h3>
+            <p><code style="font-size: 1rem;">@Model.ReaderCode</code></p>
+
+            <hr />
+
+            <div class="text-start px-2">
+                <p class="mb-2"><strong>Total Borrowed:</strong> <span class="badge bg-primary">@Model.TotalBorrowed Books</span></p>
+                <p class="mb-0">
+                    <strong>Fine Ledger Status:</strong> <br />
+                    @if (Model.TotalFines > 0)
+                    {
+                        <span class="text-danger font-weight-bold" style="font-size: 1.15rem;">@Model.TotalFines.ToString("C")</span>
+                    }
+                    else
+                    {
+                        <span class="text-success"><i class="glyphicon glyphicon-ok-sign"></i> No Outstanding Fines</span>
+                    }
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-9" style="padding-left: 30px;">
+            <h4 class="text-secondary mb-3" style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; font-weight: 700;">
+                System Core Authentication Information
+            </h4>
+
+            <div class="data-row">
+                <span class="data-label">Email Address:</span>
+                <span class="data-value">@(Model.UserAccount != null ? Model.UserAccount.Email : "N/A")</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Phone Connection:</span>
+                <span class="data-value">@(Model.UserAccount != null ? Model.UserAccount.Phone : "N/A")</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Physical Address:</span>
+                <span class="data-value">@(Model.UserAccount != null ? Model.UserAccount.Address : "N/A")</span>
+            </div>
+
+            <h4 class="text-secondary mt-4 mb-3" style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; font-weight: 700;">
+                Reader Demographic & Subscription Metadata
+            </h4>
+
+            <div class="data-row">
+                <span class="data-label">Gender Designation:</span>
+                <span class="data-value">@(string.IsNullOrEmpty(Model.Gender) ? "Unspecified" : Model.Gender)</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Date of Birth:</span>
+                <span class="data-value">@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("dd/MM/yyyy") : "Not Provided")</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Membership Signed:</span>
+                @* FIX: Added .Value to support the formatting argument *@
+                <span class="data-value">@Model.MembershipDate.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Expiration Date:</span>
+                <span class="data-value">
+                    @* FIX: Use .Value here as well to check and print the dates safely *@
+                    @if (Model.MembershipExpiry.HasValue && Model.MembershipExpiry.Value < DateTime.Today)
+                    {
+                        <span class="text-danger font-weight-bold">@Model.MembershipExpiry.Value.ToString("dd/MM/yyyy") (Expired)</span>
+                    }
+                    else if (Model.MembershipExpiry.HasValue)
+                    {
+                        <span class="text-success">@Model.MembershipExpiry.Value.ToString("dd/MM/yyyy") (Active Asset)</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Expiration Date Set</span>
+                    }
+                </span>
+            </div>
+
+            <div class="mt-4 pt-2">
+                @if (Model.TotalFines > 0)
+                {
+                    using (Html.BeginForm("ClearFines", "Librarian", new { id = Model.ReaderId }, FormMethod.Post, new { style = "display:inline;", onsubmit = "return confirm('Are you sure you want to verify payment and wipe this fine balance?');" }))
+                    {
+                        <button type="submit" class="btn btn-success">
+                            <span class="glyphicon glyphicon-usd"></span> Process Payment / Clear All Fines
+                        </button>
+                    }
+                }
+                <button class="btn btn-default" onclick="window.print();">
+                    <span class="glyphicon glyphicon-print"></span> Print Dossier
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-xs-12">
+            <h3 style="border-bottom: 2px solid #edf2f7; padding-bottom: 10px; font-weight:700;" class="text-primary">
+                <span class="glyphicon glyphicon-time"></span> Personal Borrowing & Request History
+            </h3>
+
+            <table class="table table-striped table-hover mt-3">
+                <thead>
+                    <tr class="bg-light">
+                        <th>Transaction ID</th>
+                        <th>Target Book Title</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Current Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (history != null && history.Any())
+                    {
+                        foreach (var tx in history)
+                        {
+                            <tr>
+                                <td><code>BRW-#@tx.BorrowingId</code></td>
+                                <td style="font-weight: 600;">@tx.BookTitle</td>
+                                @* FIX 2: Removed .ToString() formatting parameter because these properties are already strings generated by your controller *@
+                                <td>@tx.BorrowDateText</td>
+                                <td>@tx.DueDateText</td>
+                                <td>
+                                    @if (tx.Status == "Approved")
+                                    {
+                                        <span class="status-badge label-success" style="background-color: #28a745; color:#fff; padding: 3px 8px;">Approved</span>
+                                    }
+                                    else if (tx.Status == "Returned")
+                                    {
+                                        <span class="status-badge label-default" style="background-color: #6c757d; color:#fff; padding: 3px 8px;">Returned</span>
+                                    }
+                                    else if (tx.Status == "Pending")
+                                    {
+                                        <span class="status-badge label-warning" style="background-color: #ffc107; color:#000; padding: 3px 8px;">Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge label-info" style="padding: 3px 8px;">@tx.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted" style="padding: 20px;">
+                                No historical borrowing actions recorded for this reader account.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

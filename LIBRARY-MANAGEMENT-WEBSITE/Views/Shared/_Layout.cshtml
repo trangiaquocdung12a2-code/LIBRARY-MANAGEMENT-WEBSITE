@@ -8,7 +8,6 @@
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-
 </head>
 
 <body>
@@ -29,20 +28,41 @@
                     <li class="nav-item">
                         @Html.ActionLink("Books", "Index", "Book", null, new { @class = "nav-link" })
                     </li>
+
+                    @* CHANGED FROM "LibrarianDashboard" TO "Dashboard" TO MATCH YOUR CONTROLLER NAME *@
+                    @if (Session["UserId"] != null && Session["Role"] != null && Session["Role"].ToString() == "Librarian")
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink("Dashboard", "Index", "Librarian", null, new { @class = "nav-link" })
+                        </li>
+                    }
                 </ul>
 
                 <ul class="navbar-nav">
                     @if (Session["UserId"] != null)
                     {
                         <li class="nav-item">
-                            <a href="#" class="nav-link">Hello, @Session["FullName"]</a>
+                            <a href="#" class="nav-link" style="pointer-events: none; color: #fff !important; font-weight: bold;">Hello, @Session["FullName"]</a>
                         </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("My Profile", "Profile", "Reader", null, new { @class = "nav-link" })
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("My Borrowings", "MyBorrowings", "Borrowing", null, new { @class = "nav-link" })
-                        </li>
+
+                        if (Session["Role"] != null && Session["Role"].ToString() == "Librarian")
+                        {
+                            @* LIBRARIAN PROFILE - NOW AN ACTIVE WORKING LINK *@
+                            <li class="nav-item">
+                                @Html.ActionLink("Librarian Profile", "Profile", "Librarian", null, new { @class = "nav-link" })
+                            </li>
+                        }
+                        else
+                        {
+                            @* REGULAR READER / STUDENT LINKS *@
+                            <li class="nav-item">
+                                @Html.ActionLink("My Profile", "Profile", "Reader", null, new { @class = "nav-link" })
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink("My Borrowings", "MyBorrowings", "Borrowing", null, new { @class = "nav-link" })
+                            </li>
+                        }
+
                         <li class="nav-item">
                             @Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link" })
                         </li>

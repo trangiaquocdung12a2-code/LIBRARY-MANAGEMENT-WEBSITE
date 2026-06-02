@@ -1,0 +1,89 @@
+﻿@model IEnumerable<LIBRARY_MANAGEMENT_WEBSITE.Controllers.DashboardActivityViewModel>
+
+@{
+    ViewBag.Title = "Librarian Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top: 30px;">
+    <h2 style="font-weight: 600; margin-bottom: 25px;"><i class="glyphicon glyphicon-dashboard"></i> Librarian Dashboard</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row text-center" style="margin-bottom: 30px;">
+        <div class="col-md-3 col-sm-6">
+            <div style="background: #3498db; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin:0; font-size: 2.5em; font-weight: bold;">@ViewBag.TotalBooks</h3>
+                <p style="margin:0; text-transform: uppercase; font-size: 0.85em; font-weight: 600;">Total Books</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div style="background: #2ecc71; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin:0; font-size: 2.5em; font-weight: bold;">@ViewBag.TotalReaders</h3>
+                <p style="margin:0; text-transform: uppercase; font-size: 0.85em; font-weight: 600;">Total Readers</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div style="background: #f1c40f; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin:0; font-size: 2.5em; font-weight: bold;">@ViewBag.ActiveBorrowings</h3>
+                <p style="margin:0; text-transform: uppercase; font-size: 0.85em; font-weight: 600;">Active Borrowings</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin:0; font-size: 2.5em; font-weight: bold;">@ViewBag.PendingRequests</h3>
+                <p style="margin:0; text-transform: uppercase; font-size: 0.85em; font-weight: 600;">Pending Requests</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5" style="margin-bottom: 25px;">
+            <div class="panel panel-default" style="border-radius: 8px;">
+                <div class="panel-heading" style="font-weight: 600; background-color: #f8f9fa;">Management Console Links</div>
+                <div class="list-group">
+                    <a href="@Url.Action("BorrowRequests", "Librarian")" class="list-group-item"><i class="glyphicon glyphicon-list-alt"></i>Manage Borrow Requests & Approvals</a>
+                    <a href="@Url.Action("BookAvailability", "Librarian")" class="list-group-item"><i class="glyphicon glyphicon-book"></i>Manage Book Availability States</a>
+                    <a href="@Url.Action("ReaderProfiles", "Librarian")" class="list-group-item"><i class="glyphicon glyphicon-user"></i>View Reader Information Profile Matrix</a>
+                    <a href="@Url.Action("Fines", "Librarian")" class="list-group-item"><i class="glyphicon glyphicon-usd"></i>Manage Fine Records Ledger</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="panel panel-default" style="border-radius: 8px;">
+                <div class="panel-heading" style="font-weight: 600; background-color: #f8f9fa;">Recent Operational Activities Feed</div>
+                <div class="table-responsive">
+                    <table class="table table-hover style=" margin: 0;"">
+                        <thead>
+                            <tr>
+                                <th>Reader</th>
+                                <th>Book Asset Title</th>
+                                <th>Status State</th>
+                                <th>Date Issued</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var activity in Model)
+                            {
+                                <tr>
+                                    <td><strong>@activity.ReaderName</strong></td>
+                                    <td>@activity.BookTitle</td>
+                                    <td>
+                                        <span class="label @(activity.Status == "Approved" ? "label-success" : activity.Status == "Pending" ? "label-warning" : "label-danger")">
+                                            @activity.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">@activity.ActivityDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

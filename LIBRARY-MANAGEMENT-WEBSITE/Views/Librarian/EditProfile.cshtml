@@ -1,0 +1,73 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Librarian
+
+@{
+    ViewBag.Title = "Edit Profile";
+}
+
+<h2>Edit Profile</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="profile-box" style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 30px;">
+    @using (Html.BeginForm("EditProfile", "Librarian", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <label class="font-weight-bold d-block mb-2">Current Avatar</label>
+                @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
+                {
+                    <img src="@Url.Content(Model.UserAccount.AvatarUrl)" style="width:180px; height:180px; object-fit:cover; border-radius:8px; border:1px solid #ddd;" id="avatarPreview" />
+                }
+                else
+                {
+                    <img src="https://via.placeholder.com/180x180?text=No+Avatar" style="width:180px; height:180px; object-fit:cover; border-radius:8px; border:1px solid #ddd;" id="avatarPreview" />
+                }
+                <div class="form-group mt-3">
+                    <input type="file" name="avatar" id="avatarInput" class="form-control" accept="image/*" onchange="previewImage(this);" />
+                    <small class="text-muted d-block mt-1">Upload a new square profile picture.</small>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="form-group mb-3">
+                    <label class="font-weight-bold">Full Name</label>
+                    <input type="text" name="fullName" class="form-control" value="@(Model.UserAccount != null ? Model.UserAccount.FullName : "")" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="font-weight-bold">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" value="@(Model.UserAccount != null ? Model.UserAccount.Phone : "")" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="font-weight-bold">Home Address</label>
+                    <input type="text" name="address" class="form-control" value="@(Model.UserAccount != null ? Model.UserAccount.Address : "")" />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold">Department Division</label>
+                    <input type="text" name="department" class="form-control" value="@Model.Department" />
+                </div>
+
+                <hr />
+                <button type="submit" class="btn btn-success">Save Profile Changes</button>
+                <a href="@Url.Action("Profile", "Librarian")" class="btn btn-default">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

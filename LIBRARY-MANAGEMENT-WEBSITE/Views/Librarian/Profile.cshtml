@@ -1,0 +1,120 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Librarian
+
+@{
+    ViewBag.Title = "Librarian Profile";
+}
+
+<style>
+    .profile-box {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        margin-top: 20px;
+    }
+
+    .profile-avatar {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        display: block;
+        margin: 0 auto 20px auto;
+        object-fit: cover;
+    }
+
+    .profile-info-group p {
+        font-size: 1.05rem;
+        margin-bottom: 12px;
+        color: #333;
+    }
+
+    .profile-info-group b {
+        color: #495057;
+        display: inline-block;
+        width: 170px;
+    }
+
+    .badge-staff {
+        background-color: #17a2b8;
+        color: #fff;
+        font-size: 0.85rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background-color: #28a745;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .badge-inactive {
+        background-color: #dc3545;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+</style>
+
+<h2>My Profile</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="profile-box">
+    <div class="row">
+        <div class="col-md-3 text-center">
+            @if (Model.UserAccount != null && !string.IsNullOrEmpty(Model.UserAccount.AvatarUrl))
+            {
+                <img src="@Url.Content(Model.UserAccount.AvatarUrl)" class="profile-avatar" alt="Avatar" />
+            }
+            else
+            {
+                <img src="https://via.placeholder.com/200x200?text=Librarian" class="profile-avatar" alt="Avatar" />
+            }
+            <div class="mt-2">
+                <span class="badge-staff"><i class="glyphicon glyphicon-star"></i> Staff Account</span>
+            </div>
+        </div>
+
+        <div class="col-md-9 profile-info-group">
+            <p><b>Full Name:</b> @(Model.UserAccount != null ? Model.UserAccount.FullName : "")</p>
+            <p><b>Email:</b> @(Model.UserAccount != null ? Model.UserAccount.Email : "")</p>
+            <p><b>Phone:</b> @(Model.UserAccount != null ? Model.UserAccount.Phone : "")</p>
+            <p><b>Address:</b> @(Model.UserAccount != null ? Model.UserAccount.Address : "")</p>
+
+            <hr />
+
+            <p><b>Librarian Code:</b> <code>@Model.LibrarianCode</code></p>
+            <p><b>Department:</b> @Model.Department</p>
+            <p><b>Hire Date:</b> @Model.HireDate.ToString("dd/MM/yyyy")</p>
+            <p>
+                <b>Account Status:</b>
+                @if (Model.IsActive == true || Model.IsActive == null)
+                {
+                    <span class="badge-active">Active Staff</span>
+                }
+                else
+                {
+                    <span class="badge-inactive">Inactive</span>
+                }
+            </p>
+
+            <div class="mt-4">
+                <div class="mt-4">
+                    <a href="@Url.Action("EditProfile", "Librarian")" class="btn btn-primary">Update Profile</a>
+                    <a href="@Url.Action("ChangePassword", "Librarian")" class="btn btn-warning">Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
