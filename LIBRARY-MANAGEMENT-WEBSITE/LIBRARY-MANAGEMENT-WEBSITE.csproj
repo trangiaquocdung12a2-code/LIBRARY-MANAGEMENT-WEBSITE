@@ -120,6 +120,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BookController.cs" />
     <Compile Include="Controllers\BorrowingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -215,6 +216,11 @@
     <Content Include="Views\Librarian\ChangePassword.cshtml" />
     <Content Include="Views\Librarian\ReaderProfiles.cshtml" />
     <Content Include="Views\Librarian\ReaderDetails.cshtml" />
+    <Content Include="Views\Admin\ManageBooks.cshtml" />
+    <Content Include="Views\Admin\ManageBorrowings.cshtml" />
+    <Content Include="Views\Admin\Dashboard.cshtml" />
+    <Content Include="Views\Admin\AddBook.cshtml" />
+    <Content Include="Views\Admin\EditBook.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

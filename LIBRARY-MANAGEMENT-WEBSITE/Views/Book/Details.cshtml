@@ -138,13 +138,13 @@
                 <div class="info-item"><b>Average Rating:</b> ★ @Model.AverageRating / 5</div>
                 <div class="info-item">
                     <b>Status:</b>
-                    @if (Model.AvailableCopies > 0)
+                    @if (ViewBag.IsUnavailable == true)
                     {
-                        <span class="badge-status available">Available</span>
+                        <span class="badge-status unavailable">Unavailable</span>
                     }
                     else
                     {
-                        <span class="badge-status unavailable">Unavailable</span>
+                        <span class="badge-status available">Available</span>
                     }
                 </div>
             </div>
@@ -165,7 +165,17 @@
 
             <!-- Action Buttons -->
             <div class="action-group mt-20">
-                @if (Model.AvailableCopies > 0)
+                @if (ViewBag.IsUnavailable == true)
+                {
+                    <div class="alert alert-warning" style="font-weight: 600; margin-bottom: 20px; border-radius: 6px;">
+                        <i class="glyphicon glyphicon-info-sign"></i> @ViewBag.StatusMessage
+                    </div>
+
+                    <button class="btn btn-danger" disabled="disabled" style="cursor: not-allowed;">
+                        <i class="glyphicon glyphicon-ban-circle"></i> Book Unavailable
+                    </button>
+                }
+                else
                 {
                     if (Session["UserId"] != null)
                     {
@@ -179,10 +189,6 @@
                             <i class="glyphicon glyphicon-log-in"></i> Login to Borrow
                         </a>
                     }
-                }
-                else
-                {
-                    <button class="btn btn-danger" disabled>Book Unavailable</button>
                 }
 
                 <a href="@Url.Action("Index", "Book")" class="btn btn-default">

@@ -132,7 +132,7 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
 
             if (user.Role == "Admin")
             {
-                return RedirectToAction("Index", "Admin");
+                return RedirectToAction("Dashboard", "Admin");
             }
 
             if (user.Role == "Librarian")

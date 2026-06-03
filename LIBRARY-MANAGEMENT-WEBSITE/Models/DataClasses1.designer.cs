@@ -82,8 +82,14 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Models
 		{
 			OnCreated();
 		}
-		
-		public DataClasses1DataContext(System.Data.IDbConnection connection) : 
+        public DataClasses1DataContext() :
+base(global::System.Configuration.ConfigurationManager.ConnectionStrings[
+"LibraryDbConnectionString"].ConnectionString, mappingSource)
+        {
+            OnCreated();
+        }
+
+        public DataClasses1DataContext(System.Data.IDbConnection connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();

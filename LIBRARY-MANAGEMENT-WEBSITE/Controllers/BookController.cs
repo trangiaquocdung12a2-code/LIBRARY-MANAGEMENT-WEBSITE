@@ -14,20 +14,17 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
 
         public ActionResult Index(string search, int? categoryId, string letter, string sortBy, string viewMode, int page = 1)
         {
-            // 1. Maintain filter states in ViewBag
             ViewBag.Search = search;
             ViewBag.CategoryId = categoryId;
             ViewBag.SelectedLetter = letter;
             ViewBag.SortBy = string.IsNullOrEmpty(sortBy) ? "title" : sortBy;
-            ViewBag.ViewMode = string.IsNullOrEmpty(viewMode) ? "grid" : viewMode; // default to card grid layout
+            ViewBag.ViewMode = string.IsNullOrEmpty(viewMode) ? "grid" : viewMode;
 
-            // Pass categories for the filter dropdown
             ViewBag.Categories = db.Categories.Where(c => c.IsActive == true).ToList();
 
-            // 2. Query Base
+            // Modified to load ALL books (even inactive ones) so they stay visible in the catalog layout listings
             var query = db.Books.AsQueryable();
 
-            // 3. Apply Text Search Filter
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(b => b.Title.Contains(search) ||
@@ -35,26 +32,22 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
                                          b.Publisher.PublisherName.Contains(search));
             }
 
-            // 4. Apply Category Dropdown Filter
             if (categoryId.HasValue)
             {
                 query = query.Where(b => b.CategoryId == categoryId.Value);
             }
 
-            // 5. Apply Alphabetical First-Letter Filter
             if (!string.IsNullOrEmpty(letter) && letter != "All")
             {
                 query = query.Where(b => b.Title.StartsWith(letter));
             }
 
-            // 6. Apply Selected Sorting Options
             switch (ViewBag.SortBy.ToString().ToLower())
             {
                 case "author":
                     query = query.OrderBy(b => b.Author.FullName).ThenBy(b => b.Title);
                     break;
                 case "date":
-                    // Fallback sorting based on Id if CreatedAt column doesn't exist
                     query = query.OrderByDescending(b => b.BookId);
                     break;
                 case "title":
@@ -63,7 +56,6 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
                     break;
             }
 
-            // 7. Pagination Computations
             int pageSize = 8;
             int totalItems = query.Count();
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
@@ -76,13 +68,44 @@ namespace LIBRARY_MANAGEMENT_WEBSITE.Controllers
 
         public ActionResult Details(int id)
         {
-            var book = db.Books
-                .FirstOrDefault(b => b.BookId == id && b.IsActive == true);
+            var book = db.Books.FirstOrDefault(b => b.BookId == id);
 
             if (book == null)
             {
                 return HttpNotFound();
             }
+
+            bool isUnavailable = false;
+            string statusMessage = "";
+
+            // Check if user is logged in
+            if (Session["UserId"] != null)
+            {
+                int currentUserId = Convert.ToInt32(Session["UserId"]);
+
+                var reader = db.Readers.FirstOrDefault(r => r.UserId == currentUserId);
+                if (reader != null)
+                {
+                    // Fix: Look up through BorrowingDetails to see if this reader ever checked out this book
+                    bool hasBorrowedBefore = db.BorrowingDetails.Any(bd => bd.BookId == id && bd.Borrowing.ReaderId == reader.ReaderId);
+
+                    if (hasBorrowedBefore)
+                    {
+                        isUnavailable = true;
+                        statusMessage = "Book currently unavailable (You have already borrowed this book previously).";
+                    }
+                }
+            }
+
+            // Fallback general checkout check rule (If explicitly set inactive, or out of stock)
+            if (!book.IsActive || book.AvailableCopies <= 0)
+            {
+                isUnavailable = true;
+                statusMessage = string.IsNullOrEmpty(statusMessage) ? "Book currently unavailable (Out of copies)." : statusMessage;
+            }
+
+            ViewBag.IsUnavailable = isUnavailable;
+            ViewBag.StatusMessage = statusMessage;
 
             return View(book);
         }

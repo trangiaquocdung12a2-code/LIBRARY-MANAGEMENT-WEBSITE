@@ -1,0 +1,181 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Book
+
+@{
+    ViewBag.Title = "Add New Book";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default" style="border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                <div class="panel-heading" style="background-color: #f8f9fc; font-weight: bold; font-size: 1.2em; padding: 15px 20px;">
+                    <i class="glyphicon glyphicon-plus-sign text-success"></i> Add New Catalog Entry
+                </div>
+                <div class="panel-body" style="padding: 30px;">
+
+                    @using (Html.BeginForm("AddBook", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="row">
+                            <div class="col-md-8">
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Title *</label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "e.g., Clean Code", required = "required" })
+                                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">ISBN</label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.ISBN, new { @class = "form-control", placeholder = "978-0132350884" })
+                                        @Html.ValidationMessageFor(model => model.ISBN, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Category</label>
+                                    <div class="col-md-9">
+                                        @Html.DropDownList("CategoryId", null, "-- Select Book Category --", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Author</label>
+                                    <div class="col-md-9">
+                                        @Html.DropDownList("AuthorId", null, "-- Select Author Name --", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AuthorId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Publisher</label>
+                                    <div class="col-md-9">
+                                        @Html.DropDownList("PublisherId", null, "-- Select Publisher Node --", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PublisherId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Total Copies</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.TotalCopies, new { @class = "form-control", @type = "number", @min = "0" })
+                                    </div>
+
+                                    <label class="control-label col-md-3" style="text-align: right;">Available</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.AvailableCopies, new { @class = "form-control", @type = "number", @min = "0" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Publish Year</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.PublishYear, new { @class = "form-control", @type = "number", placeholder = "2026" })
+                                    </div>
+
+                                    <label class="control-label col-md-3" style="text-align: right;">Page Count</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.PageCount, new { @class = "form-control", @type = "number" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Language</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.Language, new { @class = "form-control", placeholder = "English" })
+                                    </div>
+
+                                    <label class="control-label col-md-3" style="text-align: right;">Shelf Location</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.ShelfLocation, new { @class = "form-control", placeholder = "A1-01" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Ebook URL</label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.EbookUrl, new { @class = "form-control", placeholder = "https://example.com/ebook.pdf" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" style="text-align: left;">Description</label>
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "4", placeholder = "Enter brief plot summary or details..." })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <div class="checkbox">
+                                            <label style="font-weight: bold;">
+                                                @Html.CheckBoxFor(model => model.IsFeatured) Feature on Homepage Listing
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <div class="checkbox">
+                                            <label style="font-weight: bold;">
+                                                @Html.CheckBoxFor(model => model.IsActive) Active Status (Visible to readers)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 text-center" style="border-left: 1px solid #eee; padding-left: 25px;">
+                                <label style="font-weight: bold; color: #555; display: block; margin-bottom: 15px;">Book Cover Art</label>
+
+                                <div style="margin-bottom: 20px;">
+                                    <img id="imgPreview" src="https://placehold.co/180x240/e2e8f0/64748b?text=No+Cover"
+                                         alt="Book Cover Preview" class="img-thumbnail"
+                                         style="width: 180px; height: 240px; object-fit: cover; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                                </div>
+
+                                <div class="form-group" style="padding: 0 15px;">
+                                    <input type="file" name="ImageFile" id="imageInput" class="form-control" accept="image/*" style="padding: 6px 12px;" />
+                                    <small class="text-muted" style="display: block; margin-top: 5px;">Select an image file to upload.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e3e6f0;">
+                            <div class="col-md-12 text-right">
+                                <a href="@Url.Action("ManageBooks", "Admin")" class="btn btn-default" style="margin-right: 10px; padding: 8px 20px;">Cancel</a>
+                                <button type="submit" class="btn btn-success" style="background-color: #1cc88a; border-color: #1cc88a; padding: 8px 24px; font-weight: bold;">
+                                    Save & Insert Book
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.getElementById('imageInput').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const previewImg = document.getElementById('imgPreview');
+                previewImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

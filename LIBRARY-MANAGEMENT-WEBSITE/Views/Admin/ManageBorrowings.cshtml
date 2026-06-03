@@ -1,0 +1,31 @@
+﻿@model IEnumerable<LIBRARY_MANAGEMENT_WEBSITE.Models.Borrowing>
+
+<h2>Borrowing Activity Records</h2>
+<table class="table table-striped">
+    <tr>
+        <th>Borrowing ID</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Update Action</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.BorrowingId</td>
+            <td>@item.DueDate.ToShortDateString()</td>
+            <td><span class="label label-info">@item.Status</span></td>
+            <td>
+                @using (Html.BeginForm("UpdateBorrowStatus", "Admin", new { id = item.BorrowingId }, FormMethod.Post, new { @class = "form-inline" }))
+                {
+                    <select name="status" class="form-control input-sm">
+                        <option value="Approved">Approved</option>
+                        <option value="Returned">Returned</option>
+                        <option value="Overdue">Overdue</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-default">Change</button>
+                }
+            </td>
+        </tr>
+    }
+</table>

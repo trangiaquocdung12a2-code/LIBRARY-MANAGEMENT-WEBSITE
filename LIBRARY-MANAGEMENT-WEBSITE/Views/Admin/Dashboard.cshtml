@@ -1,0 +1,170 @@
+﻿@model LIBRARY_MANAGEMENT_WEBSITE.Models.Book 
+
+@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dashboard-stat-box {
+        padding: 25px 20px;
+        border-radius: 8px;
+        color: #fff;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+        .dashboard-stat-box:hover {
+            transform: translateY(-5px);
+        }
+
+    .stat-icon {
+        font-size: 2.5em;
+        opacity: 0.3;
+        float: right;
+    }
+
+    .stat-number {
+        font-size: 2.2em;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+
+    .stat-title {
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    .quick-link-card {
+        border: 1px solid #e3e6f0;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        background-color: #fff;
+    }
+
+        .quick-link-card .card-header {
+            background-color: #f8f9fc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: bold;
+            color: #4e73df;
+        }
+
+        .quick-link-card .card-body {
+            padding: 20px;
+        }
+
+    .btn-quick {
+        margin-bottom: 10px;
+        text-align: left;
+    }
+</style>
+
+<div class="container" style="margin-top: 30px;">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="page-header" style="margin-bottom: 25px; color: #333;">
+                <i class="glyphicon glyphicon-dashboard"></i> Library Administration System Dashboard
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-stat-box" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                <i class="glyphicon glyphicon-book stat-icon"></i>
+                <div class="stat-title">Total Books</div>
+                <div class="stat-number">@ViewBag.TotalBooks</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-stat-box" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+                <i class="glyphicon glyphicon-user stat-icon"></i>
+                <div class="stat-title">Total Readers</div>
+                <div class="stat-number">@ViewBag.TotalReaders</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-stat-box" style="background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);">
+                <i class="glyphicon glyphicon-transfer stat-icon"></i>
+                <div class="stat-title">Total Borrowings</div>
+                <div class="stat-number">@ViewBag.TotalBorrowings</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-stat-box" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);">
+                <i class="glyphicon glyphicon-usd stat-icon"></i>
+                <div class="stat-title">Total Fines</div>
+                <div class="stat-number">@string.Format("${0:N2}", ViewBag.TotalFines)</div>
+            </div>
+        </div>
+    </div>
+
+    <hr style="border-top: 1px solid #ddd; margin: 30px 0;" />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="quick-link-card">
+                <div class="card-header">
+                    <i class="glyphicon glyphicon-cog"></i> Quick System Administration Modules
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="@Url.Action("ManageBooks", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-book" style="color:#4e73df;"></i> Manage Catalog Books
+                            </a>
+                            <a href="@Url.Action("AddBook", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-plus-sign" style="color:#1cc88a;"></i> Direct Add New Book
+                            </a>
+                            <a href="@Url.Action("ManageCategories", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-tags" style="color:#36b9cc;"></i> Manage Book Categories
+                            </a>
+                            <a href="@Url.Action("ManageAuthorsPublishers", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-pencil" style="color:#f6c23e;"></i> Manage Authors & Publishers
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("ManageReaders", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-user" style="color:#6f42c1;"></i> Manage System Readers
+                            </a>
+                            <a href="@Url.Action("ManageBorrowings", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-time" style="color:#e74a3b;"></i> Manage Borrow Tickets
+                            </a>
+                            <a href="@Url.Action("ManageFines", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-credit-card" style="color:#fd7e14;"></i> Manage Fine Processes
+                            </a>
+                            <a href="@Url.Action("ManageReviews", "Admin")" class="btn btn-default btn-lg btn-block btn-quick">
+                                <i class="glyphicon glyphicon-comment" style="color:#20c997;"></i> Moderation & Reviews
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-info-sign"></i> System Information</h3>
+                </div>
+                <div class="panel-body">
+                    <p>Welcome back, <strong>Administrator</strong>.</p>
+                    <p>Use this dashboard panel layout view to inspect running configurations across total listings, readers metrics and transactions processing values securely.</p>
+                    <hr />
+                    <h5>Quick Info:</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="glyphicon glyphicon-ok-sign text-success"></i> Connected Database: <code>LibraryDb</code></li>
+                        <li><i class="glyphicon glyphicon-ok-sign text-success"></i> Context Manager: <code>LINQ to SQL</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
